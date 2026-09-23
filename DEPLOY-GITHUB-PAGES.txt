@@ -1,0 +1,50 @@
+SKH AgriCheck V1.1.1｜GitHub Pages 手機測試部署
+
+建議 Repo 名稱：skh-agricheck
+
+【第一次部署】
+1. 到 GitHub 建立一個新的 Repository：skh-agricheck。
+   - 若使用 GitHub Free，Pages 要用 public repository。
+   - 不要把案件 JSON 或業主資料放進 repository。
+2. 在電腦把本資料夾內「所有檔案與資料夾」複製到該 repo 根目錄。
+   必須看到 index.html、app.js、mobile.js、styles.css、manifest.webmanifest、service-worker.js、icons、assets、.nojekyll。
+3. 用 GitHub Desktop Commit to main → Push origin。
+4. GitHub 網頁進入 repo → Settings → Pages。
+5. Build and deployment：
+   Source = Deploy from a branch
+   Branch = main
+   Folder = /(root)
+   按 Save。
+6. 等待 GitHub Pages 完成部署，再按 Visit site。
+   若帳號是 skhdesign、repo 名稱是 skh-agricheck，網址通常會是：
+   https://skhdesign.github.io/skh-agricheck/
+
+【Android 手機】
+1. 用 Chrome 打開 GitHub Pages HTTPS 網址。
+2. 先操作一次，確認基地圖與案件儲存正常。
+3. 點頁面「安裝 App」；若按鈕沒有出現，Chrome 選單 → 安裝應用程式／加入主畫面。
+4. 安裝完成後從手機桌面開啟 SKH AgriCheck。
+5. 關閉網路再開一次，測試離線啟動。
+
+【iPhone / iPad】
+1. 必須用 Safari 打開 GitHub Pages HTTPS 網址。
+2. 分享 → 加入主畫面。
+3. 從主畫面圖示啟動。
+4. 建議建立一筆測試案件、關閉 App、重新開啟，確認案件仍存在。
+
+【手機測試清單】
+□ 首頁 SKH Logo 正常
+□ 新增案件 / 最近案件正常
+□ 斜基地五尺寸輸入與確認正常
+□ 圖面單指平移、雙指縮放正常
+□ 40% 淺藍色、配置/曬場綠色、農舍橘色正常
+□ 畸形地一鍵最大化正常
+□ 圍牆 / 擋土牆算式與轉角節點正常
+□ 儲存案件後關閉 App，再開仍存在
+□ 匯出 JSON 正常
+□ 離線時 App 可再次開啟
+
+【重要】
+- GitHub Pages 上的是程式本身；案件預設存在手機瀏覽器 / PWA 的 localStorage，不會因為使用 Pages 自動上傳到 GitHub。
+- 清除 Safari/Chrome 的網站資料、刪除 App 或系統清理儲存空間，可能刪除本機案件。重要案件請匯出 JSON 備份。
+- 更新網站後若手機仍顯示舊版，可完全關閉 App 再開；必要時刪除舊 PWA 後重新安裝。

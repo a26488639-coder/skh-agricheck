@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SKH AgriCheck V1.1 Mobile｜案件首頁版</title>
+<meta name="theme-color" content="#21372a">
+<meta name="application-name" content="SKH AgriCheck">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AgriCheck">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css?v=1.1.1">
+</head>
+<body>
+<header>
+  <div class="brand" id="brandHome" role="button" tabindex="0" aria-label="返回首頁">
+    <img src="assets/skh-logo-96.png" alt="SKH design Logo" class="brandLogo">
+    <div><h1>SKH AgriCheck <span>V1.1 Mobile</span></h1><p>農業用地配置檢討｜黃上科建築師事務所</p></div>
+  </div>
+  <div class="actions"><button id="homeBtn">首頁</button><button id="saveCaseBtn">儲存案件</button><button id="caseManagerBtn">案件</button><button id="installBtn" class="installBtn" hidden>安裝 App</button><button id="resetLabelsBtn">重置標籤</button><button id="resetBtn">全部歸零</button><button id="printBtn">列印／存 PDF</button></div>
+</header>
+<section id="homeScreen" class="homeScreen" aria-label="案件首頁">
+  <div class="homeHero">
+    <img src="assets/skh-logo-320.png" alt="SKH design" class="homeLogo">
+    <div class="homeHeroText">
+      <span class="eyebrow">SKH DESIGN · AGRICHECK</span>
+      <h2>農業用地配置檢討</h2>
+      <p>斜基地重建、40%配置、農舍10%、曬場與牆體面積精算。</p>
+    </div>
+  </div>
+  <div class="homeQuick">
+    <button id="newCaseHome" class="homePrimary"><span>＋</span><b>新增案件</b><small>從空白基地開始</small></button>
+    <button id="openCasesHome" class="homeSecondary"><span>▤</span><b>開啟案件</b><small>讀取已儲存案件</small></button>
+    <button id="continueCaseHome" class="homeSecondary"><span>↗</span><b>繼續目前案件</b><small id="currentCaseSummary">尚未建立案件</small></button>
+  </div>
+  <section class="recentSection">
+    <div class="recentHead"><div><span class="eyebrow">RECENT</span><h3>最近案件</h3></div><button id="manageCasesHome">管理全部</button></div>
+    <div id="recentCases" class="recentCases"><div class="recentEmpty">尚未儲存案件</div></div>
+  </section>
+  <section class="homeInfoGrid">
+    <article><b>基地幾何</b><span>斜四邊形＋對角線精算</span></article>
+    <article><b>配置檢討</b><span>40%範圍、曬場與農舍10%</span></article>
+    <article><b>畸形地</b><span>農舍順形／自動最大化</span></article>
+    <article><b>離線使用</b><span>PWA 安裝後可離線作業</span></article>
+  </section>
+</section>
+<main>
+<aside>
+  <section class="panel active">
+    <h2>1. 基地尺寸（斜四邊形）</h2>
+    <div class="grid2">
+      <label>臨路寬 AB m<input id="frontW" type="number" step="0.001" min="0" value="0"></label>
+      <label>背面寬 CD m<input id="backW" type="number" step="0.001" min="0" value="0"></label>
+      <label>左側長 AD m<input id="leftD" type="number" step="0.001" min="0" value="0"></label>
+      <label>右側長 BC m<input id="rightD" type="number" step="0.001" min="0" value="0"></label>
+      <label>對角線 AC m<input id="diagAC" type="number" step="0.001" min="0" value="0"></label>
+      <label>平均側深 m<input id="avgDepthOut" readonly></label>
+      <label>圖算基地面積 ㎡<input id="parcelArea" readonly></label>
+      <label>實際基地面積 ㎡<input id="actualParcelArea" type="number" step="0.01" min="0" value="0"></label>
+      <label>最大垂直深度 m<input id="perpDepthOut" readonly></label>
+    </div>
+    <div class="formula" id="areaFormula">請先輸入四邊長度與 AC 對角線。</div>
+    <p class="note">角點固定為：A＝臨路左前、B＝臨路右前、C＝右後、D＝左後。請在 AutoCAD 量測 A→C 對角線；系統會用兩個三角形重建真實斜基地。圖算面積僅供幾何校核，農舍10%、40%用地等後續法規檢討均以「實際基地面積」為準。</p>
+    <button id="confirmParcel" class="primary full">確認基地尺寸</button>
+    <div id="parcelStatus" class="status warn">尚未確認基地</div>
+  </section>
+
+  <section class="panel locked" id="drySidePanel">
+    <h2>2. 曬場固定寬度／順形控制</h2>
+    <div class="grid2">
+      <label>左側保留 cm<input id="dryLeftCm" type="number" step="10" min="0" value="0"></label>
+      <label>右側保留 cm<input id="dryRightCm" type="number" step="10" min="0" value="0"></label>
+      <label>前側保留 cm<input id="dryFrontCm" type="number" step="10" min="0" value="0"></label>
+      <label>後側保留 cm<input id="dryBackCm" type="number" step="10" min="0" value="0"></label>
+    </div>
+    <label class="check"><input id="lockDrySides" type="checkbox" checked> 固定左右側曬場寬度，自動調整農舍</label>
+    <p class="note">輸入 0 代表該側不留設；只要留設，最窄有效寬度不得小於 300cm。矩形模式仍以臨路 AB 為正交基準；順形模式可改由左右地界或前後界線控制，以提高畸形基地的有效農舍用地面積。</p>
+    <div id="drySideStatus" class="status ok">左右側曬場：0cm／0cm</div>
+  </section>
+
+  <section class="panel locked" id="designPanel">
+    <h2>3. 農舍／配置範圍</h2>
+    <div class="grid2">
+      <label>農舍寬 m<input id="houseW" type="number" step="0.01" value="0"></label>
+      <label>農舍深 m<input id="houseD" type="number" step="0.01" value="0"></label>
+      <label>農舍面積 ㎡<input id="houseArea" readonly></label>
+      <label>農舍10%上限 ㎡<input id="houseLimit" readonly></label>
+      <label>配置平均縱深 m<input id="configD" type="number" step="0.01" value="0"></label>
+      <label>40%最大平均縱深 m<input id="depth40" readonly></label>
+    </div>
+    <div class="shape-mode-box">
+      <label>農舍用地形狀
+        <select id="houseShapeMode">
+          <option value="rect">90°矩形（原模式）</option>
+          <option value="side">順左右地界</option>
+          <option value="frontback">順前後界線</option>
+          <option value="auto">自動最大化</option>
+        </select>
+      </label>
+      <button id="fitHouseBtn" type="button" class="secondary full">畸形地一鍵最大化</button>
+      <div id="houseShapeStatus" class="status ok">目前：90°矩形</div>
+    </div>
+    <label class="check"><input id="autoConfig" type="checkbox" checked> 自動使用接近330㎡設施額度反推配置縱深</label>
+    <p class="note">配置縱深依左右地界長度的相同比例向後取得，40%線因此可為斜線。可切換「90°矩形、順左右地界、順前後界線、自動最大化」。順形模式會以多邊形面積精算農舍10%用地，不再強制維持90°矩形。</p>
+  </section>
+
+  <section class="panel locked" id="occupancyPanel">
+    <h2>4. 其他占用面積</h2>
+    <div class="grid2">
+      <label>水利溝占用 ㎡<input id="waterArea" type="number" step="0.01" min="0" value="0"></label>
+      <label>道路占用 ㎡<input id="roadArea" type="number" step="0.01" min="0" value="0"></label>
+    </div>
+    <p class="note">此兩項納入「40%農業設施用地面積檢討」：農舍＋曬場＋水利溝占用＋道路占用 ≤ 實際基地面積 × 40%。</p>
+  </section>
+
+  <section class="panel locked" id="facilityPanel">
+    <h2>5. 圍牆／擋土牆精算</h2>
+    <div class="linear-box">
+      <label>圍牆總長算式 m<input id="wallExpr" type="text" inputmode="decimal" value="0" placeholder="例如 10+5+6+7"></label>
+      <div class="grid2">
+        <label>圍牆寬度 m<input id="wallW" type="number" step="0.01" min="0" value="0"></label>
+        <label>轉角節點 個<input id="wallCorners" type="number" step="1" min="0" value="0"></label>
+      </div>
+      <div id="wallCalc" class="linear-result">圍牆面積：0.00㎡</div>
+    </div>
+    <div class="linear-box">
+      <label>擋土牆總長算式 m<input id="retExpr" type="text" inputmode="decimal" value="0" placeholder="例如 4+6+8"></label>
+      <div class="grid2">
+        <label>擋土牆寬度 m<input id="retW" type="number" step="0.01" min="0" value="0"></label>
+        <label>轉角節點 個<input id="retCorners" type="number" step="1" min="0" value="0"></label>
+      </div>
+      <div id="retCalc" class="linear-result">擋土牆面積：0.00㎡</div>
+    </div>
+    <div class="grid2 rule-grid">
+      <label>曬場最窄 m<input id="dryMin" type="number" value="3" readonly></label>
+      <label>設施合計上限 ㎡<input id="facilityLimit" type="number" value="330" readonly></label>
+    </div>
+    <p class="note">轉角以「總長 − 轉角節點 × 牆寬」修正重疊長度，再乘牆寬計算面積。例如 15cm 厚 L 型牆、1 個轉角，即扣除 0.15m；ㄇ字型 2 個轉角即扣除 0.30m。</p>
+  </section>
+
+  <section class="panel locked" id="positionPanel">
+    <h2>6. 農舍位置／手動微調</h2>
+    <div class="grid2">
+      <label>農舍左側 X m<input id="houseX" type="number" step="0.01" value="0"></label>
+      <label>距臨路垂直距離 Y m<input id="houseY" type="number" step="0.01" value="0"></label>
+    </div>
+    <p class="note">固定左右曬場時，X 位置與農舍寬度由系統控制；關閉固定模式後，可手動修改農舍寬度與位置並直接拖曳。</p>
+  </section>
+</aside>
+
+<section class="workspace">
+  <div class="canvasCard">
+    <div class="canvasTopbar">
+      <div class="legend"><span class="parcel"></span>基地　<span class="depth"></span>40%範圍　<span class="config"></span>配置區　<span class="dry"></span>曬場　<span class="house"></span>農舍</div>
+      <div class="zoomTools">
+        <button id="zoomOut" type="button" title="縮小">－</button>
+        <span id="zoomLabel">100%</span>
+        <button id="zoomIn" type="button" title="放大">＋</button>
+        <button id="fitView" type="button">完整顯示</button>
+      </div>
+    </div>
+    <div class="canvasHint">滑鼠滾輪：放大／縮小 ｜ 空白處左鍵拖曳：平移 ｜ 文字標籤可直接拖曳</div>
+    <svg id="site" viewBox="0 0 820 780"></svg>
+  </div>
+  <section class="results locked" id="resultsPanel">
+    <h2>7. 自動檢討結果</h2>
+    <div class="cards" id="cards"></div>
+    <div class="formulaBox" id="formulas"></div>
+  </section>
+</section>
+</main>
+<nav class="mobileTabs" aria-label="行動版功能切換">
+  <button type="button" data-mobile-tab="home" class="active">首頁</button>
+  <button type="button" data-mobile-tab="input">輸入</button>
+  <button type="button" data-mobile-tab="drawing">圖面</button>
+  <button type="button" data-mobile-tab="results">檢討</button>
+  <button type="button" data-mobile-tab="cases">案件</button>
+</nav>
+
+<dialog id="caseDialog" class="caseDialog">
+  <div class="dialogHead"><div class="dialogBrand"><img src="assets/skh-logo-96.png" alt="SKH design"><div><b>案件管理</b><small id="storageHint">儲存在此裝置</small></div></div><button id="closeCaseDialog" type="button">關閉</button></div>
+  <div class="caseActions">
+    <label>案件名稱<input id="caseName" type="text" placeholder="例如：新萬貴段447"></label>
+    <div class="caseActionGrid">
+      <button id="saveCurrentCase" type="button" class="primary">儲存目前案件</button>
+      <button id="exportCaseBtn" type="button">匯出 JSON</button>
+      <button id="importCaseBtn" type="button">匯入 JSON</button>
+      <button id="shareCaseBtn" type="button">分享案件</button>
+    </div>
+    <input id="importCaseFile" type="file" accept="application/json,.json" hidden>
+  </div>
+  <div id="caseList" class="caseList"></div>
+</dialog>
+
+<div id="installHelp" class="installHelp" hidden>
+  <div class="installCard">
+    <b>安裝 SKH AgriCheck</b>
+    <p id="installHelpText">使用瀏覽器選單的「加入主畫面」即可安裝。</p>
+    <button id="closeInstallHelp" type="button">知道了</button>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="app.js?v=1.1.1"></script>
+<script src="mobile.js?v=1.1.1"></script>
+</body></html>
